@@ -5,7 +5,7 @@ import java.util.Observable;
 
 
 /** The state of a game of 2048.
- *  @author TODO: YOUR NAME HERE
+ *  @author MartinLwx
  */
 public class Model extends Observable {
     /** Current contents of the board. */
@@ -110,9 +110,70 @@ public class Model extends Observable {
         boolean changed;
         changed = false;
 
+        /** The coordinates are:
+         *  3
+         *  2
+         *  1
+         *  0 1 2 3
+         */
+        board.setViewingPerspective(side);
+        int size = board.size();
+        for (int col = 0; col < size; col++) {
+            // move every non-empty tile in order
+            // [x, 2, 2, x] -> [2, 2, x, x]
+            // skip merging this step.
+            for (int row = size - 1; row >= 0; row--) {
+                Tile t = board.tile(col, row);
+                if (t != null) {
+                    // find nextPos which is null
+                    int nextPos = 3;
+                    while (nextPos >= row) {
+                        if (board.tile(col, nextPos) == null) {
+                            break;
+                        }
+                        nextPos--;
+                    }
+                    // check if nextPos is a legal position
+                    if (nextPos >= row) {
+                        board.move(col, nextPos, t);
+                        changed = true;
+                    }
+                }
+            }
+            // try to merge
+            // [2, 2, x, x] -> [4, x, x, x]
+            for (int row = 3; row >= 0; row--) {
+                Tile curTile = board.tile(col, row);
+                int nextLine = row - 1;
+                if (nextLine < 0) {
+                    break;
+                }
+                Tile nextTile = board.tile(col, nextLine);
+                if (curTile == null || nextTile == null) {
+                    break;
+                }
+                int nextValue = nextTile.value();
+                if (nextValue == curTile.value()) {
+                    board.move(col, row, nextTile);
+                    score += curTile.value() * 2;
+//                    System.out.println("Merge at" + col + ":" + row + " " + curTile.value());
+                    for (int p = nextLine - 1; p >= 0; p--) {
+                        Tile tt = board.tile(col, p);
+                        if (tt == null) {
+                            break;
+                        }
+                        if (p < size) {
+                            board.move(col, p + 1, tt);
+                        }
+                    }
+                    changed = true;
+                }
+            }
+        }
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
+        board.setViewingPerspective(Side.NORTH);
 
         checkGameOver();
         if (changed) {
@@ -137,7 +198,14 @@ public class Model extends Observable {
      *  Empty spaces are stored as null.
      * */
     public static boolean emptySpaceExists(Board b) {
-        // TODO: Fill in this function.
+        int size = b.size();
+        for (int col = 0; col < size; col++) {
+            for (int row = 0; row < size; row++) {
+                if (b.tile(col, row) == null) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -147,7 +215,16 @@ public class Model extends Observable {
      * given a Tile object t, we get its value with t.value().
      */
     public static boolean maxTileExists(Board b) {
-        // TODO: Fill in this function.
+        int size = b.size();
+        for (int col = 0; col < size; col++) {
+            for (int row = 0; row < size; row++) {
+                Tile t = b.tile(col, row);
+                // only when t != null should we check t.value()
+                if (t != null && t.value() == MAX_PIECE) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -158,7 +235,31 @@ public class Model extends Observable {
      * 2. There are two adjacent tiles with the same value.
      */
     public static boolean atLeastOneMoveExists(Board b) {
-        // TODO: Fill in this function.
+        if (emptySpaceExists(b)) {
+            return true;
+        }
+        // 4 directions, LEFT/UP/RIGHT/DOWN
+        int[] dx = {0, -1, 0, 1};
+        int[] dy = {-1, 0, 1, 0};
+
+        int size = b.size();
+        for (int col = 0; col < size; col++) {
+            for (int row = 0; row < size; row++) {
+                // Because we have checked emptySpace, t.values() must exist
+                int curTileValue = b.tile(col, row).value();
+                for (int move = 0; move < 4; move++) {
+                    int colNew = col + dx[move];
+                    int rowNew = row + dy[move];
+                    // make sure the tile is on the board
+                    if (colNew > 0 && colNew < size && rowNew > 0 && rowNew < size) {
+                        Tile newTile = b.tile(colNew, rowNew);
+                        if (newTile.value() == curTileValue) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
         return false;
     }
 
