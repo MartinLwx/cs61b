@@ -3,15 +3,15 @@ package deque;
 
 import java.util.Iterator;
 
-public class LinkedListDeque<T> implements Deque<T>{
+public class LinkedListDeque<T> implements Deque<T> {
     private Node sentinel;
     private int size;
 
     /** Bidirectional LinkedListDeque's node */
     public class Node {
-        public T item;
-        public Node prev;
-        public Node next;
+        private T item;
+        private Node prev;
+        private Node next;
         public Node(T x, Node p, Node n) {
             item = x;
             prev = p;
@@ -126,13 +126,13 @@ public class LinkedListDeque<T> implements Deque<T>{
         if (this == otherObject) {
             return true;
         }
-        if (otherObject == null || getClass() != otherObject.getClass()) {
+        if (otherObject == null) {
             return false;
         }
-        if (! (otherObject instanceof LinkedListDeque)) {
+        if (!(otherObject instanceof LinkedListDeque)) {
             return false;
         }
-        LinkedListDeque<T> other = (LinkedListDeque<T>) otherObject;
+        LinkedListDeque<?> other = (LinkedListDeque<?>) otherObject;
         if (this.size() != other.size()) {
             return false;
         }

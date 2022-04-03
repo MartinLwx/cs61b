@@ -1,11 +1,9 @@
 package deque;
 
-import com.sun.xml.internal.xsom.impl.scd.Iterators;
-
 import java.util.Iterator;
 
 /** Circular implementation */
-public class ArrayDeque<T> implements Deque<T>{
+public class ArrayDeque<T> implements Deque<T> {
     private T[] items;
     private int size;
 
@@ -142,13 +140,13 @@ public class ArrayDeque<T> implements Deque<T>{
         if (this == otherObject) {
             return true;
         }
-        if (otherObject == null || getClass() != otherObject.getClass()) {
+        if (otherObject == null) {
             return false;
         }
-        if (! (otherObject instanceof ArrayDeque)) {
+        if (!(otherObject instanceof ArrayDeque)) {
             return false;
         }
-        ArrayDeque<T> other = (ArrayDeque<T>) otherObject;
+        ArrayDeque<?> other = (ArrayDeque<?>) otherObject;
         if (this.size() != other.size()) {
             return false;
         }
