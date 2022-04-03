@@ -12,9 +12,9 @@ public class ArrayDeque<T> implements Deque<T> {
     private int nextFirst;
     private int nextLast;
 
-    public static final int INIT_SIZE = 8;
-    public static final double USAGE_RATIO = 0.25;
-    public static final int RESIZE_FACTOR = 2;
+    private static final int INIT_SIZE = 8;
+    private static final double USAGE_RATIO = 0.25;
+    private static final int RESIZE_FACTOR = 2;
 
     /** Constructor */
     public ArrayDeque() {
@@ -25,7 +25,7 @@ public class ArrayDeque<T> implements Deque<T> {
     }
 
     /** Resize */
-    public void resize(int capacity) {
+    private void resize(int capacity) {
         T[] newItems = (T[]) new Object[capacity];
         int startPos = addOne(nextFirst);
         for (int i = 0; i < size; i++) {
@@ -38,12 +38,12 @@ public class ArrayDeque<T> implements Deque<T> {
     }
 
     /** Add one element circularly */
-    public int addOne(int index) {
+    private int addOne(int index) {
         return (index + 1) % items.length;
     }
 
     /** Minus one element circularly */
-    public int minusOne(int index) {
+    private int minusOne(int index) {
         return (index + items.length - 1) % items.length;
     }
 
@@ -67,12 +67,12 @@ public class ArrayDeque<T> implements Deque<T> {
         size += 1;
     }
 
-    public boolean isFull() {
+    private boolean isFull() {
         return size == items.length;
     }
 
     /** isSparse = true if the usage ratior < 0.25 */
-    public boolean isSparse() {
+    private boolean isSparse() {
         return items.length >= 16 && size * 1.0 / items.length < USAGE_RATIO;
     }
 
@@ -146,12 +146,13 @@ public class ArrayDeque<T> implements Deque<T> {
         if (!(otherObject instanceof ArrayDeque)) {
             return false;
         }
-        ArrayDeque<?> other = (ArrayDeque<?>) otherObject;
+        // ArrayDeque.equals(LinkedListDeque) ?
+        Deque<?> other = (Deque<?>) otherObject;
         if (this.size() != other.size()) {
             return false;
         }
         for (int i = 0; i < size; i++) {
-            if (this.get(i) != other.get(i)) {
+            if (!this.get(i).equals(other.get(i))) {
                 return false;
             }
         }
@@ -160,7 +161,7 @@ public class ArrayDeque<T> implements Deque<T> {
 
     private class ArrayDequeIterator implements Iterator<T> {
         private int index;
-        ArrayDequeIterator() {
+        public ArrayDequeIterator() {
             index = 0;
         }
 
