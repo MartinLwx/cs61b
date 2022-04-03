@@ -1,5 +1,9 @@
 package deque;
 
+import com.sun.xml.internal.xsom.impl.scd.Iterators;
+
+import java.util.Iterator;
+
 /** Circular implementation */
 public class ArrayDeque<T> implements Deque<T>{
     private T[] items;
@@ -131,5 +135,51 @@ public class ArrayDeque<T> implements Deque<T>{
         }
         int startPos = addOne(nextFirst);
         return items[(startPos + index) % items.length];
+    }
+
+    @Override
+    public boolean equals(Object otherObject) {
+        if (this == otherObject) {
+            return true;
+        }
+        if (otherObject == null || getClass() != otherObject.getClass()) {
+            return false;
+        }
+        if (! (otherObject instanceof ArrayDeque)) {
+            return false;
+        }
+        ArrayDeque<T> other = (ArrayDeque<T>) otherObject;
+        if (this.size() != other.size()) {
+            return false;
+        }
+        for (int i = 0; i < size; i++) {
+            if (this.get(i) != other.get(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private class ArrayDequeIterator implements Iterator<T> {
+        private int index;
+        ArrayDequeIterator() {
+            index = 0;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return index < size;
+        }
+
+        @Override
+        public T next() {
+            T item = get(index);
+            index++;
+            return item;
+        }
+    }
+
+    public Iterator<T> iterator() {
+        return new ArrayDequeIterator();
     }
 }
