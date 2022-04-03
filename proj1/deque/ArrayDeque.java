@@ -1,11 +1,12 @@
 package deque;
 
 /** Circular implementation */
-public class ArrayDeque<T> {
+public class ArrayDeque<T> implements Deque<T>{
     private T[] items;
     private int size;
 
-    // the next position of nextFront && nextLast
+    // the next position to insert
+    // [...,nextFirst, (real data), nextLast, ...]
     private int nextFirst;
     private int nextLast;
 
@@ -44,26 +45,24 @@ public class ArrayDeque<T> {
         return (index + items.length - 1) % items.length;
     }
 
+    @Override
     public void addFirst(T item) {
         if (isFull()) {
-            resize(items.length * 2);
+            resize(items.length * RESIZE_FACTOR);
         }
         items[nextFirst] = item;
         nextFirst = minusOne(nextFirst);
         size += 1;
     }
 
+    @Override
     public void addLast(T item) {
         if (isFull()) {
-            resize(items.length * 2);
+            resize(items.length * RESIZE_FACTOR);
         }
         items[nextLast] = item;
         nextLast = addOne(nextLast);
         size += 1;
-    }
-
-    public boolean isEmpty() {
-        return size == 0;
     }
 
     public boolean isFull() {
@@ -72,13 +71,15 @@ public class ArrayDeque<T> {
 
     /** isSparse = true if the usage ratior < 0.25 */
     public boolean isSparse() {
-        return items.length >= 16 && size < (items.length / 4);
+        return items.length >= 16 && size * 1.0 / items.length < USAGE_RATIO;
     }
 
+    @Override
     public int size() {
         return size;
     }
 
+    @Override
     public void printDeque() {
         if (!isEmpty()) {
             System.out.print(items[addOne(nextFirst)]);
@@ -89,22 +90,30 @@ public class ArrayDeque<T> {
         System.out.println();
     }
 
+    @Override
     public T removeFirst() {
+        if (isEmpty()) {
+            return null;
+        }
         if (isSparse()) {
-            resize(items.length / 2);
+            resize(items.length / RESIZE_FACTOR);
         }
         nextFirst = addOne(nextFirst);
         T tmp = items[nextFirst];
-        items[nextFirst] = null;
+        items[nextFirst] = null;        // For GC
         if (!isEmpty()) {
             size -= 1;
         }
         return tmp;
     }
 
+    @Override
     public T removeLast() {
+        if (isEmpty()) {
+            return null;
+        }
         if (isSparse()) {
-            resize(items.length / 2);
+            resize(items.length / RESIZE_FACTOR);
         }
         nextLast = minusOne(nextLast);
         T tmp = items[nextLast];
@@ -115,6 +124,7 @@ public class ArrayDeque<T> {
         return tmp;
     }
 
+    @Override
     public T get(int index) {
         if (index >= size) {
             return null;
