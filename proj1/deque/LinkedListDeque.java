@@ -12,7 +12,7 @@ public class LinkedListDeque<T> implements Deque<T> {
         private final T item;
         private Node prev;
         private Node next;
-        public Node(T x, Node p, Node n) {
+        Node(T x, Node p, Node n) {
             item = x;
             prev = p;
             next = n;
@@ -129,10 +129,10 @@ public class LinkedListDeque<T> implements Deque<T> {
         if (otherObject == null) {
             return false;
         }
-        if (!(otherObject instanceof LinkedListDeque)) {
+        // ArrayDeque.equals(LinkedListDeque) ?
+        if (!(otherObject instanceof Deque)) {
             return false;
         }
-        // ArrayDeque.equals(LinkedListDeque) ?
         Deque<?> other = (Deque<?>) otherObject;
         if (this.size() != other.size()) {
             return false;
@@ -148,7 +148,7 @@ public class LinkedListDeque<T> implements Deque<T> {
     private class LinkedListDequeIterator implements Iterator<T> {
         private int index;
 
-        public LinkedListDequeIterator() {
+        LinkedListDequeIterator() {
             index = 0;
         }
 

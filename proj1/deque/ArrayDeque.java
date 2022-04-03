@@ -143,10 +143,10 @@ public class ArrayDeque<T> implements Deque<T> {
         if (otherObject == null) {
             return false;
         }
-        if (!(otherObject instanceof ArrayDeque)) {
+        // ArrayDeque.equals(LinkedListDeque) ?
+        if (!(otherObject instanceof Deque)) {
             return false;
         }
-        // ArrayDeque.equals(LinkedListDeque) ?
         Deque<?> other = (Deque<?>) otherObject;
         if (this.size() != other.size()) {
             return false;
@@ -161,7 +161,7 @@ public class ArrayDeque<T> implements Deque<T> {
 
     private class ArrayDequeIterator implements Iterator<T> {
         private int index;
-        public ArrayDequeIterator() {
+        ArrayDequeIterator() {
             index = 0;
         }
 

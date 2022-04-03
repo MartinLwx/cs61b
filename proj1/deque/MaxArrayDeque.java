@@ -6,6 +6,7 @@ public class MaxArrayDeque<T> extends ArrayDeque<T> {
     private Comparator<T> myComparator;
     /** Constructor */
     public MaxArrayDeque(Comparator<T> c) {
+        super();
         this.myComparator = c;
     }
 
@@ -19,12 +20,13 @@ public class MaxArrayDeque<T> extends ArrayDeque<T> {
         if (isEmpty()) {
             return null;
         }
-        int maxIndex = 0;
+        T maxVal = get(0);
         for (int i = 1; i < size(); i++) {
-            if (c.compare(get(maxIndex), get(i)) > 0) {
-                maxIndex = i;
+            T currentVal = get(i);
+            if (c.compare(currentVal, maxVal) > 0) {
+                maxVal = currentVal;
             }
         }
-        return get(maxIndex);
+        return maxVal;
     }
 }
